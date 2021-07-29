@@ -1,25 +1,24 @@
 #include <petsc/finclude/petscmat.h>
-#include "petsc/finclude/petscviewer.h" 
-#include "petsc/finclude/petscsys.h" 
-#include "petsc/finclude/petscis.h"  
+#include "petsc/finclude/petscviewer.h"
+#include "petsc/finclude/petscsys.h"
+#include "petsc/finclude/petscis.h"
 
 program main
     use petscmat
     !use petscviewer
-    use mpi
+    ! use mpi
     use petscsys
     use petscis
     implicit none
     PetscInt ierr
     Mat matadj
     MatPartitioning part
-    type(tIs) is,isg
+    type(tIs) is,isg, rows
     PetscInt :: i0(6) = (/0, 2, 4, 7, 10, 12/)
     PetscInt :: j0(12) = (/3,4, 4,5, 3,4,5, 1,2,4, 3,5/)
     PetscInt :: i1(2) = (/0, 3/)
     PetscInt :: j1(3) = (/0,2, 4/)
 
-    
     integer rank, size
 
     !!!
@@ -49,7 +48,12 @@ program main
     call MatDestroy(Matadj, ierr)
     call ISCreate(MPI_COMM_WORLD,isg,ierr)
     call ISPartitioningToNumbering(is,isg,ierr)
+    call ISCreate(MPI_COMM_WORLD,rows,ierr)
+
     call IsView(is, PETSC_VIEWER_STDOUT_WORLD, ierr)
+    call ISBuildTwoSided(is,PETSC_NULL_IS, rows, ierr)
+    CHKERRA(ierr)
+    call IsView(rows, PETSC_VIEWER_STDOUT_WORLD, ierr)
 
     call petscFinalize(ierr)
 end program
