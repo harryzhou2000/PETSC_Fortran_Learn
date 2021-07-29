@@ -10,5 +10,8 @@ Flags:=-cpp ${OptFlag} ${Include} ${Module}
 
 all: main.exe
 
-main.exe: main.f90
-	${FC} main.f90 -o main.exe ${Libs} ${Flags}
+funcs.o: funcs.f90
+	${FC} funcs.f90 -c -o funcs.o ${Flags}
+
+main.exe: main.f90 funcs.o
+	${FC} main.f90 funcs.o -o main.exe ${Libs} ${Flags}
